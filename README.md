@@ -1,10 +1,12 @@
-# simglucose
+# simglucose — S2017
 
 [![Downloads](https://static.pepy.tech/badge/simglucose)](https://pepy.tech/project/simglucose)
 [![Downloads](https://static.pepy.tech/badge/simglucose/month)](https://pepy.tech/project/simglucose)
 [![Downloads](https://static.pepy.tech/badge/simglucose/week)](https://pepy.tech/project/simglucose)
 
 A Type-1 Diabetes simulator implemented in Python for Reinforcement Learning purpose
+
+This fork extends the original [simglucose](https://github.com/jxx123/simglucose) with the **UVa/Padova S2017** dynamics, porting the patient model from S2013 to S2017 as described in Visentin et al. (2018). The S2013 mode remains the default for full backward compatibility.
 
 This simulator is a python implementation of the FDA-approved [UVa/Padova Simulator (2008 version)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4454102/) for research purpose only. The simulator includes 30 virtual patients, 10 adolescents, 10 adults, 10 children. There is [documentation of the virtual patient's parameters](https://github.com/jxx123/simglucose/blob/master/definitions_of_vpatient_parameters.md).
 
@@ -13,6 +15,74 @@ This simulator is a python implementation of the FDA-approved [UVa/Padova Simula
 **Notice**: simglucose no longer supports python 3.7 and 3.8, please update to >=3.9 verison. Thanks!
 
 **Announcement (08/20/2023)**: simglucose now supports gymnasium! Check [examples/run_gymnasium.py](examples/run_gymnasium.py) for usage.
+
+---
+
+## S2017 Extension
+
+### What's new
+
+This fork ports the core patient ODE from **S2013** to **S2017** (Visentin et al., 2018), adding three physiological features controlled by the `model_version` flag:
+
+| Feature | Parameter(s) | Équation | Référence |
+|---------|-------------|---------|-----------|
+| Intraday insulin sensitivity variability | `kp3(t)`, `Vmx(t)` | A5, A10 | Visentin et al. 2015 |
+| Dawn phenomenon (3 am – 7 am) | `kp1(t)`, `kir(t)` | A5, A10 | Mallad et al. (ref. 29) |
+| Glucagon subsystem | `X_H`, `H`, `SR_Hs` (3 new ODE states) | A8, A23–A26 | Visentin et al. 2018 |
+
+The default is `model_version="S2013"` — existing code requires no changes.
+
+### References
+
+- **S2017 model:**
+  Visentin R, Campos-Náñez E, Schiavon M, Lv D, Vettoretti M, Breton M, Kovatchev BP, Dalla Man C, Cobelli C.
+  *The UVA/Padova Type 1 Diabetes Simulator Goes From Single Meal to Single Day.*
+  J Diabetes Sci Technol. 2018;12(2):273-281.
+  DOI: [10.1177/1932296818757747](https://doi.org/10.1177/1932296818757747)
+
+- **Intraday SI variability model (7 classes):**
+  Visentin R, Dalla Man C, Kudva YC, Basu A, Cobelli C.
+  *Circadian Variability of Insulin Sensitivity: Physiological Input for In Silico Artificial Pancreas.*
+  Diabetes. 2015;64(6):1989-1997.
+  DOI: [10.2337/db14-0192](https://doi.org/10.2337/db14-0192)
+
+### Quick start — S2017 mode
+
+```python
+from simglucose.patient.t1dpatient import T1DPatient
+
+# Mode S2013 (défaut, rétrocompatible — aucun changement nécessaire)
+patient = T1DPatient.withName("adult#001")
+
+# Mode S2017
+patient = T1DPatient.withName(
+    "adult#001",
+    model_version="S2017",
+    start_time=360,   # real time of day at t=0, in minutes from midnight (360 = 06:00)
+    si_class=5,       # SI variability class 1-7 (None = random draw weighted by probability)
+    seed=42,
+)
+```
+
+```bash
+# Run a full-day S2017 simulation with plots
+python examples/run_s2017.py
+
+# Compare S2017 vs S2013 side-by-side
+python examples/run_s2017.py --compare
+
+# Check S2013 backward-compatibility
+python tests/make_baseline.py --check
+```
+
+### Implementation notes
+
+- **SI variability classes** and their probabilities are from Visentin et al. 2015 (Table/Fig. 4):
+  α = 0.4 (low/high ratio), σ = 0.2 (per-period noise), transitions at 04:00 / 11:00 / 17:00.
+- **Dawn phenomenon** parameters: `delta_kp1_max = 1.5 mg/kg/min` (Mallad et al., cited as ref. 29 in Visentin 2018). `delta_kir_max = 0.3` is a **placeholder** — see `simglucose/params/dawn_params.csv`.
+- **Glucagon parameters** are all **placeholders** pending calibration on S2017 data — see `CHANGELOG.md`.
+
+---
 
 | Animation                                        | CVGA Plot                     | BG Trace Plot                                   | Risk Index Stats                                |
 | ------------------------------------------------ | :---------------------------- | ----------------------------------------------- | ----------------------------------------------- |
