@@ -1,0 +1,16 @@
+# Intraday insulin sensitivity variability classes.
+# Source: Visentin et al. (2015), Diabetes, doi:10.2337/db14-0192, Fig. 2 and Results.
+# 7 classes based on SI pattern at breakfast (B), lunch (L), dinner (D).
+# si_B/si_L/si_D: multiplier on kp3 and Vmx relative to subject S2013 baseline.
+# High (h) = 1.0, Low (l) = alpha = 0.4.
+# Probabilities from 20 T1DM subjects (N_i / 20).
+# sigma_noise: SD of multiplicative daily random noise (N(1, sigma^2)), per period.
+# Transition times (min from midnight): t_B=240 (04:00), t_L=660 (11:00), t_D=1020 (17:00).
+class_id,description,prob,si_B,si_L,si_D,sigma_noise
+1,h-h-h,0.10,1.0,1.0,1.0,0.2
+2,h-h-l,0.05,1.0,1.0,0.4,0.2
+3,h-l-h,0.05,1.0,0.4,1.0,0.2
+4,h-l-l,0.10,1.0,0.4,0.4,0.2
+5,l-h-h,0.20,0.4,1.0,1.0,0.2
+6,l-h-l,0.20,0.4,1.0,0.4,0.2
+7,l-l-h,0.30,0.4,0.4,1.0,0.2
