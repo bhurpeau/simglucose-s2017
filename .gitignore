@@ -7,6 +7,9 @@
 examples/results/
 tests/_tmp_results/
 
+# PDFs — copyright protégé, ne pas commiter
+docs/*.pdf
+
 # Setuptools distribution folder.
 /dist/
 /build/
