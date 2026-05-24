@@ -1,0 +1,12 @@
+# Dawn phenomenon parameters for the UVA/Padova T1D S2017 simulator.
+# Source: Visentin et al. (2018), J Diabetes Sci Technol 12(2):273-281.
+# delta_kp1_max: ~1.5 mg/kg/min increase in EGP (kp1) over 3:00-7:00.
+#   From Mallad et al. (2015), ref. 29 in Visentin 2018.
+# delta_kir_max: fractional reduction of Vmx (kir effect) during dawn.
+#   TODO: calibrate on Mallad et al. (2015) ref. 29 — placeholder value 0.3.
+# dawn_start / dawn_end: minutes from midnight, consistent with Mallad 2015.
+param,value,unit,source
+delta_kp1_max,1.5,mg/kg/min,Mallad et al. 2015 (ref.29 in Visentin 2018) - mean EGP increase 3am-7am
+delta_kir_max,0.3,dimensionless,TODO: calibrate on Mallad et al. 2015 (ref.29) - placeholder
+dawn_start,180,min from midnight,Mallad et al. 2015 (3:00 am)
+dawn_end,420,min from midnight,Mallad et al. 2015 (7:00 am)
