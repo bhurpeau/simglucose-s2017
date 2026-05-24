@@ -1,8 +1,11 @@
+.DS_Store
 # Compiled python modules.
 *.pyc
 
-# results foler
+# results folder
 /results/
+examples/results/
+tests/_tmp_results/
 
 # Setuptools distribution folder.
 /dist/
